@@ -16,8 +16,8 @@ const estilos = {
 }
 
 export default function Login(){
-    const [userName, setUserName] = useState(''); //falsy
-    const [password, setPassword] = useState(''); //falsy
+    const [userName, setUserName] = useState('');
+    const [password, setPassword] = useState('');
     
     const [logado, setLogado] = useState(false);
 
