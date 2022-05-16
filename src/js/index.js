@@ -4,15 +4,14 @@ const URL = 'http://localhost:5010';
 
 const logIn = async (data) =>{
     let uri = URL+'/users/login'
-    const respuesta = await axios.post(uri,data)
+    return new Promise( (resolve,reject)=> axios.post(uri,data)
     .then(res=>{
-        return res;
+        resolve(res);
     })
     .catch(err=>{
-        return err;
-    });
-
-    return respuesta;
+        console.log('Error en logIn');
+        reject(err);
+    }));
 }
 
 export {logIn};

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import Login from './login/Login';
 import Register from './login/Register';
 
@@ -13,19 +13,29 @@ const estilos = {
         borderRadius: '20px',
         textAlign:'center',
     },
+    div:{
+        justifyContent:'center',
+        display:'flex',
+        flexDirection:'row',
+    },
+    textOptions:{
+        cursor:'pointer',
+    },
 }
 
-export default function Structure(){
+export default function Structure({root}){
 
     const [registro, setRegistro] = useState(true);
 
     return(
         <Box style={estilos.container}>
-            <h1>
-                <span onClick={() => setRegistro(true)}>Login</span>/<span onClick={()=> setRegistro(false)}>Register</span>
-            </h1>
+            <div style={estilos.div}>
+                <Typography variant='h4' style={estilos.textOptions} onClick={() => setRegistro(true)}>Login</Typography>
+                <Typography variant='h4'>/</Typography>
+                <Typography variant='h4' style={estilos.textOptions} onClick={()=> setRegistro(false)}>Register</Typography>
+            </div>
             {registro 
-             ?(<Login/>) 
+             ?(<Login root={root}/>) 
              :(<Register/>)  
             }
         </Box>

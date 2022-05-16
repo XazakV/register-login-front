@@ -5,5 +5,5 @@ import Structure from './Components'
 const root = ReactDOM.createRoot(document.getElementById("principal"));
 
 root.render(
-  <Structure/>,
+  <Structure root={root}/>,
 );
