@@ -1,5 +1,6 @@
-import React, {useState, useEffect} from 'react';
-import {FormControlLabel, Divider, Switch, Button, TextField, Alert} from '@mui/material';
+import React, {useState} from 'react';
+import {FormControlLabel, Divider, Switch, Button, TextField} from '@mui/material';
+import Alerta from './Alerta';
 
 const estilo ={
     text:{margin:'2px'},
@@ -9,21 +10,15 @@ const estilo ={
 export default function Register(){
     
     const [values, setValues] = useState({userName:'',email:'',password:'',cPassword:'',acept:false})
-    const [validacion, setValidacion] = useState(false);
-
-    useEffect(()=>{
-        //console.log('Obj values: ', values)
-    },[values]);
+    const [validacion, setValidacion] = useState({state:false, message:''});
 
     const onNameChanged = (e)=>{
         const {name,value } = e.target;
         setValues( (prev)=>({  ...prev, [name]:value}));
-        console.log(values.userName);
     }
 
     const onMailChanged = (e)=>{
         setValues((prev)=>({ ...prev, email:e.target.value}));
-        console.log(values.email);
     }
 
     const onPasswordChange = (e) => {
@@ -40,25 +35,53 @@ export default function Register(){
 
     const onHandleClick = (e) =>{
         e.preventDefault();
-        console.log('Click');
+        const emptyInputs = checkEmptyInputs();
         const chkPwd = checkPassword();
-        if(chkPwd){
-            setValidacion(true);
+        
+        if(!emptyInputs){
+            setValidacion({
+                state:true, 
+                message:'Debes rellenar todos los campos.'
+            })
+            
+        }
+
+        if(!chkPwd){
+            setValidacion({
+                state:true, 
+                message:'Los campos "Password" y "Confirm Password" deben ser iguales.'
+            });
+        }
+
+        if(!values.acept){
+            setValidacion({
+                state:true,
+                message:'Debe aceptar los terminos de privacidad.'
+            });
+        }
+
+        if(emptyInputs && chkPwd && values.acept){
+            console.log('Logado');
         }
     }
-/*
-    function checkAcept(acept){
-        if(acept) return true
-    }
-*/
+
+    //Metodo que compara los campos "password" y "confirm password"
     function checkPassword(){
         if(values.password.localeCompare(values.cPassword) === 0){
             console.log('Iguales');
-            return true
+            return true;
         }else{
             console.log('No iguales');
-            return false
+            return false;
         }
+    }
+
+    //Metodo que revisa que los inputs no esten vacíos
+    function checkEmptyInputs(){
+        const {userName,email,password,cPassword } = values;
+        if(userName.trim() === '' || email.trim() === '' || password.trim() === '' || cPassword.trim() === ''){
+            return false;
+        }else{return true}
     }
 
 
@@ -96,7 +119,7 @@ export default function Register(){
                 <Divider style={estilo.divider}/>
                 <Button style={{margin:'8px'}} variant="outlined" onClick={onHandleClick}>Register</Button>
                {
-                   validacion ?<Alert variant="filled" severity="success">Datos Validos</Alert> :<Alert variant="filled" severity="error">Datos incorrectos</Alert>
+                   <Alerta validacion={validacion} setValidacion={setValidacion}/>
                }
         </div>
     );

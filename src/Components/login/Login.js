@@ -1,11 +1,9 @@
-import React, {useState, useEffect} from 'react';
-//import ReactDOM from "react-dom/client";
-import {Button, TextField, Divider, Alert, Snackbar, Slide} from '@mui/material';
+import React, {useState} from 'react';
+import {Button, TextField, Divider, Backdrop, CircularProgress} from '@mui/material';
 import { logIn } from '../../js';
 
-import Principal from '../Structure/Principal';
-
-//const root = ReactDOM.createRoot(document.getElementById("principal"));
+import Principal from '../Structure/Index';
+import Alerta from './Alerta';
 
 const estilos = {
     form:{
@@ -18,7 +16,7 @@ const estilos = {
         gap:'8px',
         
     },
-    slideError:{
+    slide:{
         position: 'absolute',
         top: '0.5%',
         left: '41%',
@@ -29,46 +27,46 @@ export default function Login({root}){
 
     const [userName, setUserName] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const [openError, setOpenError] = useState(false);
     const [logado, setLogado] = useState(false);
-
-    useEffect(()=>{
-        logado ? console.log('Logado') : console.log('Deslogado');
-    },[logado]);
-
-    useEffect(()=>{
-        if(openError){
-            setTimeout(()=>{setOpenError(false)},[5000]);
-        }
-    },[openError]);
-
-    const handleCloseError = () =>{
-        setOpenError(false);
-    }
-    
+    const [validacion, setValidacion] = useState({state:false, message:''});
 
     const handleClick = (e) => {
         e.preventDefault();
+        setLogado(true);
+        if(!userName || !password){
+            setLogado(false);
+            setValidacion({
+                state:true, 
+                message:'Los campos no pueden estar vacíos'
+            });
+            return false; 
+        }
         //console.log(`Nombre de usuario: ${userName} - Password ${password}`);
         metodoLogin();
     }
 
     const metodoLogin = async ()=>{
         try{
+            
             const token = await logIn({userName,password});
             console.log('token: ',token);
             if(!token.data){
-                console.log('Login incorrecto');
+                setLogado(false);
+                setValidacion({
+                    state:true, 
+                    message:'Nombre de usuario o contraseña incorrecto'
+                });
                 return false;
             };
-            console.log('Login correcto');
-            setLogado(true);
-            root.render(<Principal/>);
+            setLogado(false);
+            root.render(<Principal data={token.data}/>);
         }catch(err){
             console.log(err);
-            setError(err.message);
-            setOpenError(true);
+            setLogado(false);
+            setValidacion({
+                state:true, 
+                message:err.message
+            });
         }
     }
 
@@ -93,14 +91,14 @@ export default function Login({root}){
                 variant="outlined" />
             </div>
             <Divider style={{margin:'8px'}}/>
-            {
-                logado
-                ? (<Button style={{marginBottom:'8px'}} variant="outlined" onClick={()=>setLogado(false)} >LogOut</Button>)
-                : (<Button style={{marginBottom:'8px'}} variant="outlined" onClick={handleClick} >Login</Button> )
-            }
-            <Slide style={estilos.slideError} in={openError} direction="down" mountOnEnter unmountOnExit onClose={handleCloseError}>
-                <Alert style={{justifyContent:'center'}} variant="filled" severity="error">Error:  {error}</Alert>
-            </Slide>
+            <Button style={{marginBottom:'8px'}} variant="outlined" onClick={handleClick}>Login</Button> 
+            <Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={logado}
+            >
+                <CircularProgress size='200px' color="inherit" />
+            </Backdrop>
+            <Alerta validacion={validacion} setValidacion={setValidacion}/>
         </div>
     );
 }

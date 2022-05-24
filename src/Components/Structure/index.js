@@ -1,12 +1,16 @@
 import React from 'react';
+import Appbar from './Principal/Appbar';
 
-export default function Estructura(user){
+export default function Estructura({data}){
 
-    console.log('Usuario: ',user)
+    const usuario = data[0].split(' ')[0];
+    const rol = data[1].toLowerCase();
 
     return(
         <div>
-            <span>{`Bienvenid@ ${user.name}`}</span>
+            <Appbar data={{usuario,rol}}/>
+            <h1>{`Bienvenid@ ${usuario}`}</h1>
+            <h3>{`Tu rol es ${rol}`}</h3>
         </div>
     );
 }
